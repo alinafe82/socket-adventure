@@ -51,7 +51,6 @@ class Server(object):
         self.socket = None
         self.client_connection = None
         self.port = port
-
         self.room = 0
 
     def connect(self):
@@ -80,7 +79,26 @@ class Server(object):
 
         # TODO: YOUR CODE HERE
 
-        pass
+       # if self.room == 0:
+       #     print("The room is dark")
+       # elif self.room == 1:
+       #     print("The walls are molding today")
+       # elif self.room == 2:
+       #     print("The yellow room has a trap door at the back that leads no where")
+       # elif self.room == 3:
+       #     print("The floors in this room are carpeted, and the walls are red.")
+       # else:
+       #     print("No rooms above 4")
+
+        #return self.room
+
+    # Or
+        return [
+            "You are in a room with the white wallpaper.",
+            "You are in a room with the brown wallpaper.",
+            "You are in a room with the green wallpaper.",
+            "You are in a room with the yellow wallpaper.",
+        ][room_number]
 
     def greet(self):
         """
@@ -109,7 +127,7 @@ class Server(object):
 
         # TODO: YOUR CODE HERE
 
-        pass
+        self.input_buffer = self.client_connection.recv(32).decode()
 
     def move(self, argument):
         """
@@ -133,8 +151,23 @@ class Server(object):
         """
 
         # TODO: YOUR CODE HERE
+        next_room = 0
 
-        pass
+        if self.room == 0 and argument == "north":
+            next_room = 3
+        if self.room == 0 and argument == "west":
+            next_room = 1
+        if self.room == 0 and argument == "east":
+            next_room = 2
+        if self.room == 1 and argument == "east":
+            next_room = 0
+        if self.room == 2 and argument == "west":
+            next_room = 0
+        if self.room == 3 and argument == "south":
+            next_room = 0
+
+        self.room = next_room
+        self.output_buffer = self.room_description()
 
     def say(self, argument):
         """
@@ -152,7 +185,7 @@ class Server(object):
 
         # TODO: YOUR CODE HERE
 
-        pass
+        self.output_buffer = "You say, \"{}\"".format(argument)
 
     def quit(self, argument):
         """
@@ -168,7 +201,9 @@ class Server(object):
 
         # TODO: YOUR CODE HERE
 
-        pass
+        # self.output_buffer = "You quit, \"{}\"".format(argument)
+        self.output_buffer = "Goodbye!!"
+        self.done = True
 
     def route(self):
         """
@@ -184,7 +219,17 @@ class Server(object):
 
         # TODO: YOUR CODE HERE
 
-        pass
+        command = self.input_buffer.split(" ")[0]
+        arguments = self.input_buffer.splt(" ")[1:]
+
+        {
+            "quit":self.quit,
+            "move": self.move,
+            "say": self.say,
+        }.get(command)(arguments)
+
+        #if self.input_buffer.split(" ")[0] == "quit":
+        #    self.quit(None)
 
     def push_output(self):
         """
